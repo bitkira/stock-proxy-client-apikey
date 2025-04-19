@@ -23,7 +23,7 @@ const ALLOWED_OVERVIEW_FIELDS = [
     "PERatio",
     "ForwardPE",
     "PriceToSalesRatioTTM",
-    "Dividend Yield",
+    "DividendYield",
     "EPS",
     "GrossProfitTTM",
     "ProfitMargin",
