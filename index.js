@@ -10,7 +10,7 @@ const axios = require('axios');
 
 
 const app = express();
-const port = process.env.PORT || 3000; // 端口号，优先使用环境变量 PORT
+const port = process.env.PORT || 8000; // 选择一个新端口，例如 8000
 
 const ALPHAVANTAGE_BASE_URL = 'https://www.alphavantage.co/query';
 
@@ -117,8 +117,7 @@ app.get('/api/stock/overview', async (req, res) => {
 });
 
 // 启动服务器
-app.listen(port, () => {
-    console.log(`股票概览代理服务正在运行，监听端口 ${port}`);
-    console.log(`**安全警告：此配置下，apikey 从客户端发送。请确保客户端到后端的连接使用 HTTPS。**`);
-    console.log(`访问示例: http://localhost:${port}/api/stock/overview?symbol=IBM&apikey=YOUR_API_KEY`);
+app.listen(port, '127.0.0.1', () => { // 明确指定监听本地回环地址
+    console.log(`股票概览代理服务正在运行，监听端口 http://127.0.0.1:${port}`);
+    console.log(`请确保您的反向代理（如 Xray）将 HTTPS 请求转发到此地址和端口。`);
 });
