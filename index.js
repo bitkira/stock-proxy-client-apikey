@@ -15,6 +15,7 @@ const port = process.env.PORT || 8000; // 选择一个新端口，例如 8000
 const ALPHAVANTAGE_BASE_URL = 'https://www.alphavantage.co/query';
 
 // 根据您提供的截图，定义需要保留的字段白名单
+// 注意：白名单中仍然保留原始的字段名，因为过滤是基于原始数据的
 const ALLOWED_OVERVIEW_FIELDS = [
     "Symbol",
     "Name",
@@ -23,7 +24,7 @@ const ALLOWED_OVERVIEW_FIELDS = [
     "PERatio",
     "ForwardPE",
     "PriceToSalesRatioTTM",
-    "DividendYield",
+    "DividendYield", // 注意拼写修正 DividendYield
     "EPS",
     "GrossProfitTTM",
     "ProfitMargin",
@@ -31,8 +32,8 @@ const ALLOWED_OVERVIEW_FIELDS = [
     "QuarterlyEarningsGrowthYOY",
     "QuarterlyRevenueGrowthYOY",
     "LatestQuarter",
-    "52WeekHigh",
-    "52WeekLow",
+    "52WeekHigh", // 仍然在白名单中进行过滤
+    "52WeekLow",  // 仍然在白名单中进行过滤
     "AnalystTargetPrice"
 ];
 
@@ -93,8 +94,21 @@ app.get('/api/stock/overview', async (req, res) => {
         // 过滤 JSON 数据，只保留白名单中的字段
         const filteredJson = filterOverviewJson(originalJson, ALLOWED_OVERVIEW_FIELDS);
 
-        console.log(`Successfully filtered data for symbol: ${symbol}`);
-        // 将过滤后的 JSON 数据作为响应返回给客户端
+        // --- 添加字段重命名逻辑 ---
+        // 在过滤后，检查并重命名字段
+        if (filteredJson.hasOwnProperty("52WeekHigh")) {
+            filteredJson["L52WeekHigh"] = filteredJson["52WeekHigh"];
+            delete filteredJson["52WeekHigh"]; // 删除原始字段
+        }
+        if (filteredJson.hasOwnProperty("52WeekLow")) {
+            filteredJson["L52WeekLow"] = filteredJson["52WeekLow"];
+            delete filteredJson["52WeekLow"]; // 删除原始字段
+        }
+        // --- 重命名逻辑结束 ---
+
+
+        console.log(`Successfully filtered and renamed data for symbol: ${symbol}`);
+        // 将过滤并重命名后的 JSON 数据作为响应返回给客户端
         res.status(alphaVantageResponse.status).json(filteredJson);
 
     } catch (error) {
